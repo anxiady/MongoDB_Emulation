@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSCI351-MongoDBEmulation</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jura&display=swap">
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            background-color: black;
+            color: rgba(0, 255, 56, 1);
+            font-family: Jura;
+            font-weight: Light;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-size: 6rem;
+            margin-left: 15px;
+            margin-bottom: 0.5rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+
+        }
+        .v3_2 {
+            width: 74px;
+            height: 74px;
+            background: url("static/images/v3_2.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            opacity: 1;
+            margin-top: 4rem;
+        }
+        .options {
+        display: flex;
+        flex-direction: row;
+        align-items: center
+        margin-bottom: 4rem;
+        }
+
+        .custom-button {
+            color: rgba(0, 255, 56, 1);
+            font-size: 1.15rem;
+            background-color: black;
+            height: 30px;
+            padding: 0 10px;
+            width: auto;
+            border: 3px solid rgba(0, 255, 56, 1);
+            transition: background-color 0.3s, color 0.3s;
+            margin-top: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .custom-button.active {
+            background-color: rgba(0, 255, 56, 1);
+            color: black;
+        }
+
+        input {
+            color: rgba(0, 255, 56, 1);
+            background-color: black;
+            border: 3px solid rgba(0, 255, 56, 1);
+            width: 600px;
+            height: 40px;
+            font-size: 1.5rem;
+            padding-left: 20px;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        input::placeholder {
+            color: rgba(0, 255, 56, 1);
+            font-size: 1.1rem;
+            opacity: 1;
+        }
+        button {
+            color: rgba(0, 255, 56, 1);
+            font-size: 1.15rem;
+            background-color: black;
+            height: 40px;
+            width: 80px;
+            border: 3px solid rgba(0, 255, 56, 1);
+            transition: background-color 0.3s, color 0.3s;
+            margin-top: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        button:hover {
+            background-color: rgba(0, 255, 56, 1);
+            color: black;
+        }
+
+
+        #response {
+            font-size: 1.25rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="title-container">
+        <div class="v3_2"></div>
+        <h1>MongoDB Emulation</h1>
+    </div>
+    <h2>select a button to start</h2>
+    <div class="options">
+        <button class="custom-button" id="showdButton">show database</button>
+        <button class="custom-button" id="showButton">show table</button>
+        <button class="custom-button" id="insertButton">insert value</button>
+        <button class="custom-button" id="updateButton">update value</button>
+        <button class="custom-button" id="findButton">find</button>
+        <button class="custom-button" id="joinButton">join</button>
+        <button class="custom-button" id="aggregateButton">aggregate</button>
+        <button class="custom-button" id="createButton">create a table</button>
+
+    </div>
+
+    <input type="text" id="userInput" placeholder="Select a function first...">
+    <button id="submitButton">Submit</button>
+    <div id="response"></div>
+
+    <script>
+        const showdButton = document.getElementById('showdButton');
+        const showButton = document.getElementById('showButton');
+        const insertButton = document.getElementById('insertButton');
+        const updateButton = document.getElementById('updateButton');
+        const findButton = document.getElementById('findButton');
+        const joinButton = document.getElementById('joinButton');
+        const aggregateButton = document.getElementById('aggregateButton');
+        const createButton = document.getElementById('createButton');
+        const userInput = document.getElementById('userInput');
+        const submitButton = document.getElementById('submitButton');
+        let choice = 0;
+
+        function resetButtons() {
+          showdButton.classList.remove('active');
+          showButton.classList.remove('active');
+          insertButton.classList.remove('active');
+          updateButton.classList.remove('active');
+          findButton.classList.remove('active');
+          joinButton.classList.remove('active');
+          aggregateButton.classList.remove('active');
+          createButton.classList.remove('active');
+        }
+        showdButton.addEventListener('click', () => {
+          userInput.placeholder = 'ask politely';
+          userInput.value = '';
+          choice = 1;
+          resetButtons();
+          showdButton.classList.add('active');
+        });
+        showButton.addEventListener('click', () => {
+          userInput.placeholder = 'eg. table_name or table_name(attr1, attr2)';
+          userInput.value = '';
+          choice = 2;
+          resetButtons();
+          showButton.classList.add('active');
+        });
+
+        insertButton.addEventListener('click', () => {
+          userInput.placeholder = 'eg. table_name(attr1=value1, attr2=value2)';
+          userInput.value = '';
+          choice = 3;
+          resetButtons();
+          insertButton.classList.add('active');
+        });
+
+        updateButton.addEventListener('click', () => {
+          userInput.placeholder = 'eg. table_name(attr1==value1)(attr2=value2)';
+          userInput.value = '';
+          choice = 6;
+          resetButtons();
+          updateButton.classList.add('active');
+        });
+
+        findButton.addEventListener('click', () => {
+          userInput.placeholder = 'eg. table_name(attr1=value1,attr1=value2)(project_attr1,project_attr2) or table_name(attr1=value1,attr2=value2)';
+          userInput.value = '';
+          choice = 4;
+          resetButtons();
+          findButton.classList.add('active');
+        });
+
+        joinButton.addEventListener('click', () => {
+          userInput.placeholder = 'eg. (table_name1,table_name2)(attr1,attr2)(project_attr1,project_attr2)';
+          userInput.value = '';
+          choice = 7;
+          resetButtons();
+          joinButton.classList.add('active');
+        });
+
+        aggregateButton.addEventListener('click', () => {
+          userInput.placeholder = 'eg. table_name1(attr1)(max,age)';
+          userInput.value = '';
+          choice = 8;
+          resetButtons();
+          aggregateButton.classList.add('active');
+        });
+
+        createButton.addEventListener('click', () => {
+          userInput.placeholder = 'enter a table name';
+          userInput.value = '';
+          choice = 5;
+          resetButtons();
+          createButton.classList.add('active');
+        });
+
+        submitButton.addEventListener('click', async () => {
+          const userInputValue = userInput.value;
+
+          if (userInputValue && choice === 0) {
+            const response = await fetch('/no_input', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+            document.getElementById('response').innerHTML = `${result.result}`;
+          }
+
+          if (userInputValue && choice === 1) {
+            const response = await fetch('/showd', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+
+            for (let i = 0; i < result.result.length; i++) {
+                const row = result.result[i];
+                const rowDiv = document.createElement('div');
+                rowDiv.innerHTML = JSON.stringify(row);
+                responseDiv.appendChild(rowDiv);
+            }
+          }
+
+
+          if (userInputValue && choice === 2) {
+            const response = await fetch('/showTable', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+            if (result.result.length==0){
+                document.getElementById('response').innerHTML = `It's Empty`;
+            }
+            else{
+                for (let i = 0; i < result.result.length; i++) {
+                    const row = result.result[i];
+                    const rowDiv = document.createElement('div');
+                    rowDiv.innerHTML = JSON.stringify(row);
+                    responseDiv.appendChild(rowDiv);
+                }
+            }
+          }
+
+          if (userInputValue && choice === 3) {
+            const response = await fetch('/insert', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+
+            for (let i = 0; i < result.result.length; i++) {
+                const row = result.result[i];
+                const rowDiv = document.createElement('div');
+                rowDiv.innerHTML = JSON.stringify(row);
+                responseDiv.appendChild(rowDiv);
+            }
+          }
+          if (userInputValue && choice === 4) {
+            const response = await fetch('/find', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+
+            for (let i = 0; i < result.result.length; i++) {
+                const row = result.result[i];
+                const rowDiv = document.createElement('div');
+                rowDiv.innerHTML = JSON.stringify(row);
+                responseDiv.appendChild(rowDiv);
+            }
+          }
+
+          if (userInputValue && choice === 5) {
+            const response = await fetch('/create', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+
+            for (let i = 0; i < result.result.length; i++) {
+                const row = result.result[i];
+                const rowDiv = document.createElement('div');
+                rowDiv.innerHTML = JSON.stringify(row);
+                responseDiv.appendChild(rowDiv);
+            }
+          }
+
+          if (userInputValue && choice === 6) {
+            const response = await fetch('/update', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+
+            for (let i = 0; i < result.result.length; i++) {
+                const row = result.result[i];
+                const rowDiv = document.createElement('div');
+                rowDiv.innerHTML = JSON.stringify(row);
+                responseDiv.appendChild(rowDiv);
+            }
+          }
+
+          if (userInputValue && choice === 7) {
+            const response = await fetch('/join', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+
+            for (let i = 0; i < result.result.length; i++) {
+                const row = result.result[i];
+                const rowDiv = document.createElement('div');
+                rowDiv.innerHTML = JSON.stringify(row);
+                responseDiv.appendChild(rowDiv);
+            }
+          }
+
+          if (userInputValue && choice === 8) {
+            const response = await fetch('/aggregate', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ input: userInputValue })
+            });
+
+            const result = await response.json();
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
+
+            for (let i = 0; i < result.result.length; i++) {
+                const row = result.result[i];
+                const rowDiv = document.createElement('div');
+                rowDiv.innerHTML = JSON.stringify(row);
+                responseDiv.appendChild(rowDiv);
+            }
+          }
+        });
+    </script>
+</body>
+</html>
